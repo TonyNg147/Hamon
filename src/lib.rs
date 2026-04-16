@@ -1,3 +1,21 @@
+//! # Hamon
+//!
+//! `hamon` is a high-performance, zero-cost static decorator library.
+//!
+//! ## Core Philosophy
+//! This crate provides a way to compose data processing pipelines that are
+//! resolved at compile-time. By leveraging Rust's type system, it eliminates
+//! the overhead of dynamic dispatch (`dyn`) while maintaining modularity.
+//!
+//! ## Quick Start
+//! ```rust
+//! use hamon::prelude::*;
+//!
+//! let result = Builder::new(10)
+//!     .step(|x| x + 5)
+//!     .build();
+//! ```
+//!
 pub mod builder;
 pub mod decorators;
 pub mod prelude;
