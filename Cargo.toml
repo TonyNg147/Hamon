@@ -12,6 +12,7 @@ categories = ["development-tools", "rust-patterns", "data-structures"]
 
 [dependencies]
 # Keep empty if no external runtime dependencies are needed
+hamon_derive = { path = "./hamon_derive" }
 
 [dev-dependencies]
 criterion = "0.5"

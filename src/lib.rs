@@ -17,8 +17,10 @@
 //! ```
 //!
 pub mod builder;
-pub mod decorators;
+pub mod ext;
 pub mod prelude;
+
+pub use hamon_derive::AllowStep;
 
 /// A trait for types that can transform an input `T` into an output `O`.
 ///
