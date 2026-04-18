@@ -1,6 +1,6 @@
 [package]
 name = "hamon"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Tony Nguyen tonyng147@gmail.com"]
 edition = "2021"
 description = "A zero-cost, type-level static decorator and pipeline builder."
