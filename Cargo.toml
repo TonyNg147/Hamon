@@ -1,6 +1,6 @@
 [package]
 name = "hamon"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Tony Nguyen tonyng147@gmail.com"]
 edition = "2021"
 description = "A zero-cost, type-level static decorator and pipeline builder."
@@ -12,7 +12,7 @@ categories = ["development-tools", "rust-patterns", "data-structures"]
 
 [dependencies]
 # Keep empty if no external runtime dependencies are needed
-hamon_derive = { path = "./hamon_derive" }
+hamon_derive = { version = "0.1.0", path = "./hamon_derive" }
 
 [dev-dependencies]
 criterion = "0.5"

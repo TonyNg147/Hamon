@@ -2,6 +2,13 @@
 name = "hamon_derive"
 version = "0.1.0"
 edition = "2021"
+authors = ["Tony Nguyen tonyng147@gmail.com"]
+description = "A zero-cost, type-level static decorator and pipeline builder."
+readme = "README.md"
+repository = "https://github.com/TonyNg147"
+license = "MIT"
+keywords = ["performance", "decorator", "pipeline", "zero-cost", "static-dispatch"]
+categories = ["development-tools", "rust-patterns", "data-structures"]
 
 [lib]
 proc-macro = true
