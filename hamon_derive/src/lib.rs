@@ -22,9 +22,8 @@ pub fn derive_from_state(input: TokenStream) -> TokenStream {
         } else {
             // Otherwise, implement the specific transition
             quote! {
-                // Don't use the generic for the Decorator `impl<T,D>`` here since it would unlease any possibile direction
-                // for the user type (The request from the `step` would expand on the generic type and ignore our bound)
-                impl<T,#meta> ::hamon::builder::FromStep<::hamon::builder::GuardedStep<T,#meta>> for #name {}
+                // The permit needed to form the bridge for next step.
+                impl ::hamon::utils::FromStep<#meta> for #name {}
             }
         }
     } else {

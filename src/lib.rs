@@ -1,24 +1,29 @@
-//! # Hamon
+//! # Hamon (刃文) - Zero-Cost Static Decorators
 //!
-//! `hamon` is a high-performance, zero-cost static decorator library.
+//! A high-performance library that enables composing data processing pipelines
+//! resolved entirely at compile time through Rust's type system.
 //!
-//! ## Core Philosophy
-//! This crate provides a way to compose data processing pipelines that are
-//! resolved at compile-time. By leveraging Rust's type system, it eliminates
-//! the overhead of dynamic dispatch (`dyn`) while maintaining modularity.
+//! ## Philosophy
+//! Traditional decorator patterns sacrifice performance for modularity through
+//! dynamic dispatch. Hamon achieves both by leveraging monomorphization -
+//! the compiler generates specialized machine code for each pipeline,
+//! eliminating indirection while preserving clean, composable APIs.
 //!
-//! ## Quick Start
-//! ```rust
-//! use hamon::prelude::*;
+//! ## Performance Model
+//! - **Compile Time**: Generic recursion builds type-level pipeline structure
+//! - **Runtime**: Direct function calls with zero abstraction overhead
+//! - **Memory**: Stack-first design avoids heap fragmentation
 //!
-//! let result = Builder::new(10)
-//!     .step(|x| x + 5)
-//!     .build();
-//! ```
-//!
+//! ## Core Abstraction
+//! The `Decorator<T, O>` trait represents a transformation edge in the pipeline.
+//! Through recursive generics, complex chains become nested types that LLVM
+//! can optimize into flat, efficient assembly.
 pub mod builder;
+pub mod errors;
 pub mod ext;
 pub mod prelude;
+pub mod step;
+pub mod utils;
 
 pub use hamon_derive::AllowStep;
 
@@ -28,17 +33,12 @@ pub use hamon_derive::AllowStep;
 /// how data is tempered as it passes through the pipeline.
 pub trait Decorator<T, O> {
     /// Consumes or mutates the decorator to produce a result from the input.
-    fn produce(&mut self, input: T) -> O;
+    fn produce(&mut self, input: T) -> errors::Result<O>;
 }
 
-/// Blanket implementation for any closure that matches the signature.
-/// This allows for instant, flexible strikes without defining a new struct.
-impl<T, O, F> Decorator<T, O> for F
-where
-    F: FnMut(T) -> O,
-{
-    #[inline]
-    fn produce(&mut self, previous: T) -> O {
-        self(previous)
-    }
+/// This trait imposes the standard behavior which Steps should follow.
+///
+/// Upon invoking, it would trigger the collection by processing any piled up Decorator.
+pub trait Collector<T> {
+    fn collect(self) -> errors::Result<T>;
 }
