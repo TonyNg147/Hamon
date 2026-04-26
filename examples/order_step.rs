@@ -1,5 +1,5 @@
 use hamon::errors::Result;
-use hamon::{builder::OrderedBuild, prelude::*, AllowStep};
+use hamon::{builder::OrderedBuilder, prelude::*, AllowStep};
 use std::fmt::Debug;
 
 struct Encyption;
@@ -24,7 +24,7 @@ impl<T: Debug> Decorator<T, T> for Compression {
 fn main() {
     // Given the network transferring, when a packet leaves one network to reach others
     // It needs to be Encypted before Compression.
-    let _result = OrderedBuild::new(10)
+    let _result = OrderedBuilder::new(10)
         .step(Encyption)
         .step(Compression)
         .collect();

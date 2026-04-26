@@ -1,22 +1,27 @@
-//! # Pipeline Extensions
+//! # Extensions for the customizability on usage of Step.
 //!
 //! Optional enhancements that add runtime flexibility to static pipelines.
 //!
 //! ## Conditional Decorators
-//! The `DecoratorExt` trait provides the `.when()` method, allowing decorators
-//! to be conditionally applied based on input predicates. This maintains the
+//! The `DecoratorExt` trait provides some extensions that make the world easier
+//! ### `.when()`
+//! allowing decorators to be conditionally applied based on input predicates. This maintains the
 //! zero-cost property - conditions are evaluated inline without dynamic dispatch.
-//!
-//! ## Usage
-//! ```rust
-//! expensive_decorator.when(|input| input.needs_processing())
-//! ```
 //!
 //! The condition check becomes part of the generated machine code, with no
 //! additional abstraction layers.
+//!
+//! ```rust
+//! // The pipeline will never be executed due to the invalidity of the condition passed in.
+//! let builder = Builder {val: 2}
+//!                 .step(ConditionalLongProcessing.when(|_| false));
+//! ```
+//!
+
 use crate::errors::Result;
 use crate::Decorator;
 
+/// Special decorator for validating upon advent of predicate
 pub struct ConditionDecorator<D, P> {
     decorator: D,
     pred: P,

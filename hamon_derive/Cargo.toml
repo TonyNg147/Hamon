@@ -1,6 +1,6 @@
 [package]
 name = "hamon_derive"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Tony Nguyen tonyng147@gmail.com"]
 description = "A zero-cost, type-level static decorator and pipeline builder."

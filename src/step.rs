@@ -1,3 +1,7 @@
+//! The representation of the Pipeline in system.
+//!
+//! Steps are processing units where each of them contributes a lot to the final outcome.
+//!
 use crate::errors::Result;
 use crate::{
     utils::{FromStep, StepIndex, StepIndexBase},
@@ -5,6 +9,7 @@ use crate::{
 };
 use std::marker::PhantomData;
 
+#[doc(hidden)]
 pub struct FirstStep<T>(pub(crate) T);
 
 impl<T> Collector<T> for FirstStep<T> {
@@ -60,6 +65,8 @@ where
     }
 }
 
+/// GuardedStep for ordered-matter pipeline system.
+///
 /// Unlike the typical step, this special is equipped with the ability to detect any up-front constraints
 ///
 /// With respect to Rust Philosophy "Make illegal states unrepresentable", by bounding we can ensure only eligible states (STEPS)
