@@ -4,14 +4,13 @@ struct BufferStep {
 }
 
 impl Decorator<String, String> for BufferStep {
-    fn produce(&mut self, _previous: String) -> String {
-        format!("{:08x}", self.val)
+    fn produce(&mut self, _previous: String) -> hamon::errors::Result<String> {
+        Ok(format!("{:08x}", self.val))
     }
 }
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use hamon::{prelude::Builder, Decorator};
-// Import your Hamon components here
+use hamon::{prelude::Builder, Collector, Decorator};
 
 fn bench_heavy_usage(c: &mut Criterion) {
     let mut group = c.benchmark_group("Hamon Stress Test (50 Steps)");
@@ -21,11 +20,11 @@ fn bench_heavy_usage(c: &mut Criterion) {
     // Hard-coded manual loop. No abstraction, just pure speed.
     group.bench_function("Monolith_Manual_Loop", |b| {
         b.iter(|| {
-            let mut results = Vec::with_capacity(black_box(depth));
-            for i in 0..depth {
-                results.push(format!("{:08x}", i as u32));
+            let mut result = String::new();
+            for i in 0..black_box(depth) {
+                result = format!("{:08x}", i as u32);
             }
-            black_box(results)
+            black_box(result)
         })
     });
 
@@ -34,28 +33,51 @@ fn bench_heavy_usage(c: &mut Criterion) {
     group.bench_function("Hamon_Static_Lineage", |b| {
         b.iter(|| {
             // We simulate a 50-step chain.
-            // In a real app, this would be 50 .add() calls.
+            // In a real app, this would be 50 .step() calls.
             let builder = Builder::new(String::new());
 
-            // To simulate 50 .add() calls without 50 lines of code:
-            // (In real Hamon usage, the type grows with every .add())
+            // To simulate 50 .step() calls without 50 lines of code:
+            // (In real Hamon usage, the type grows with every .step())
             macro_rules! add_ten {
-                ($b:expr) => {
-                    $b.step(BufferStep { val: 1 })
-                        .step(BufferStep { val: 2 })
-                        .step(BufferStep { val: 3 })
-                        .step(BufferStep { val: 4 })
-                        .step(BufferStep { val: 5 })
-                        .step(BufferStep { val: 6 })
-                        .step(BufferStep { val: 7 })
-                        .step(BufferStep { val: 8 })
-                        .step(BufferStep { val: 9 })
-                        .step(BufferStep { val: 10 })
+                ($b:expr, $offset:expr) => {
+                    $b.step(BufferStep {
+                        val: ($offset + 0) as u32,
+                    })
+                    .step(BufferStep {
+                        val: ($offset + 1) as u32,
+                    })
+                    .step(BufferStep {
+                        val: ($offset + 2) as u32,
+                    })
+                    .step(BufferStep {
+                        val: ($offset + 3) as u32,
+                    })
+                    .step(BufferStep {
+                        val: ($offset + 4) as u32,
+                    })
+                    .step(BufferStep {
+                        val: ($offset + 5) as u32,
+                    })
+                    .step(BufferStep {
+                        val: ($offset + 6) as u32,
+                    })
+                    .step(BufferStep {
+                        val: ($offset + 7) as u32,
+                    })
+                    .step(BufferStep {
+                        val: ($offset + 8) as u32,
+                    })
+                    .step(BufferStep {
+                        val: ($offset + 9) as u32,
+                    })
                 };
             }
 
-            let final_builder = add_ten!(add_ten!(add_ten!(add_ten!(add_ten!(builder)))));
-            black_box(final_builder.build())
+            let final_builder = add_ten!(
+                add_ten!(add_ten!(add_ten!(add_ten!(builder, 0), 10), 20), 30),
+                40
+            );
+            black_box(final_builder.collect().unwrap())
         })
     });
 
@@ -68,11 +90,11 @@ fn bench_heavy_usage(c: &mut Criterion) {
                 items.push(Box::new(BufferStep { val: i as u32 }));
             }
 
-            let results: Vec<String> = items
-                .iter_mut()
-                .map(|item| item.produce("test".into()))
-                .collect();
-            black_box(results)
+            let mut result = String::new();
+            for item in items.iter_mut() {
+                result = item.produce(result).unwrap();
+            }
+            black_box(result)
         })
     });
 
